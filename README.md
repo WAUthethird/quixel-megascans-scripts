@@ -1,4 +1,4 @@
-# Megascans Downloader
+# Quixel Megascans Scripts
 A collection of Python scripts to facilitate claiming and downloading the *entire* [Quixel Megascans](https://quixel.com/) collection before it becomes [fully paid in 2025](https://www.unrealengine.com/en-US/blog/fab-content-marketplace-launches-in-october-publishing-portal-opens-today).
 
 ## Requirements
