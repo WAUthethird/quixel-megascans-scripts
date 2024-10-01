@@ -40,7 +40,7 @@ I'd wager most people who are here are most interested in mass-claiming all asse
 If you want to download all Quixel assets, run [download_all_assets.py](download_all_assets.py) with a [*complete*](complete_asset_metadata.tar.zst) `asset_metadata.json` file in the directory you want to download assets to. It ***will not work*** with *basic* metadata.
 
 ## Future Features
-- Full resume functionality for [get_all_basic_asset_metadata.py](get_all_basic_asset_metadata.py) and [get_all_complete_asset_metadata.py](get_all_complete_asset_metadata.py).
+- Full resume functionality for [get_all_basic_asset_metadata.py](get_all_basic_asset_metadata.py) and [get_all_complete_asset_metadata.py](get_all_complete_asset_metadata.py). This would also enable new assets to be added to the metadata if and when they appear.
 - Switch from `tqdm` to `rich` to support things like a fancy spinner during checksum calculation and rich text.
 - Better error handling across the board
 
