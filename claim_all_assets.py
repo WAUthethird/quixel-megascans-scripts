@@ -51,7 +51,7 @@ def claim_quixel_asset(token, asset):
         print(f"\nEncountered error with asset {asset}! (Recieved status code {response.status_code} from Quixel server)")
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
-        claim_quixel_asset(asset)
+        claim_quixel_asset(token, asset)
 
     try:
         json_response = response.json()
