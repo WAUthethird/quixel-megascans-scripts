@@ -18,9 +18,11 @@ def save_asset_metadata(asset_metadata, asset_path):
 
 
 def extract_token(token):
-    if token.startswith("token:\""): # Copying from firefox dev tools, remove extra json data
+    if token.startswith("token:\""): # Copying from Firefox dev tools, remove extra json data
         token = token.removeprefix("token:\"")
         token = token.removesuffix("\"")
+    elif token.startswith("{\"token\":\""): # Copying from Chrome dev tools, remove extra json data
+        token = token.split("\":\"")[1].split("\",\"")[0]
 
     return token
 
