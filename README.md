@@ -13,7 +13,7 @@ The most reliable and easy way to get your Quixel token in Firefox I've found:
 2. Press **Ctrl+Shift+I** to open the Web Developer Tools.
 3. Click on the Storage tab.
 4. Open the Cookies dropdown in the left sidebar, and select the https://quixel.com option.
-5. Click on the auth cookie in the main window.
+5. Click on the `auth` cookie in the main window.
 6. Right-click and copy the `token` (not `refreshToken`) in the Parsed Value section in the right sidebar.
 7. You're done! Any script that uses a token will parse the string you copied correctly, so don't worry if there is extra formatting. If you put the token in without any formatting, that should work as well.
 
@@ -23,7 +23,8 @@ Similar to the Firefox instructions:
 2. Press **Ctrl+Shift+I** to open the Developer Tools.
 3. Click on the Application tab. If you don't see it, click the "More tabs" button next to the list of tabs and select it from there.
 4. Open the Cookies dropdown in the left sidebar, and select the https://quixel.com option.
-5. Click "Show URL-decoded" on the bottom pane and copy the entire Cookie Value, refresh token and all.
+5. Click on the `auth` cookie in the main window.
+6. Click "Show URL-decoded" on the bottom pane and copy the entire Cookie Value, refresh token and all.
 7. You're done! Any script that uses a token will parse the string you copied correctly, so don't worry if there is extra formatting. If you put the token in without any formatting, that should work as well.
 
 ## Instructions
