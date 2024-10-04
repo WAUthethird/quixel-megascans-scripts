@@ -26,7 +26,11 @@ def check_already_claimed(token):
     response = requests.get("https://quixel.com/v1/assets/acquired", headers=headers)
 
     if response.status_code != 200:
-        print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
+        try:
+            json_response = response.json()
+            print(f"\nEncountered error {response.status_code}! Here is the response from the Quixel server: {json_response}")
+        except json.JSONDecodeError:
+            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         check_already_claimed(token)
@@ -48,7 +52,11 @@ def claim_quixel_asset(token, asset):
     response = requests.post("https://quixel.com/v1/acl", headers=headers, json={"assetID": asset})
 
     if response.status_code != 200:
-        print(f"\nEncountered error with asset {asset}! (Recieved status code {response.status_code} from Quixel server)")
+        try:
+            json_response = response.json()
+            print(f"\nEncountered error {response.status_code} with asset {asset}! Here is the response from the Quixel server: {json_response}")
+        except json.JSONDecodeError:
+            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         claim_quixel_asset(token, asset)

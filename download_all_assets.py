@@ -38,8 +38,11 @@ def download_quixel_asset(asset, asset_path, download_id):
     response = requests.get(f"https://assetdownloads.quixel.com/download/{download_id}?preserveStructure=true&url=https://quixel.com/v1/downloads", stream=True)
 
     if response.status_code != 200:
-        print(f"\nEncountered error in download request for asset {asset}! (Recieved status code {response.status_code} from Quixel server)")
-        print(f"Here is the full response: {response}")
+        try:
+            json_response = response.json()
+            print(f"\nEncountered error {response.status_code} with asset {asset}! Here is the response from the Quixel server: {json_response}")
+        except json.JSONDecodeError:
+            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         download_quixel_asset(asset, asset_path, download_id)
@@ -84,8 +87,11 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
     response = requests.post("https://quixel.com/v1/downloads", headers=headers, json=data)
 
     if response.status_code != 200:
-        print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
-        print(f"Here is the full response: {response}")
+        try:
+            json_response = response.json()
+            print(f"\nEncountered error {response.status_code}! Here is the response from the Quixel server: {json_response}")
+        except json.JSONDecodeError:
+            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         request_quixel_asset(token, asset, asset_components, asset_path)
