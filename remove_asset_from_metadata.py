@@ -1,8 +1,28 @@
+import requests
 import json
+import time
 from pathlib import Path
 
 
 # Self explanatory. If you're having issues claiming or downloading an asset because it doesn't exist anymore, this script can help get rid of that error.
+
+
+update_basic_stats = True # Set to False if you don't want the stats at the top of your metadata file to be updated.
+
+
+def query_quixel_page():
+    params = {"limit": 1,
+              "page": 1}
+
+    response = requests.get("https://quixel.com/v1/assets", params=params)
+
+    if response.status_code != 200:
+        print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
+        print("Waiting 5 seconds and retrying.")
+        time.sleep(5)
+        query_quixel_page()
+
+    return response.json()
 
 
 def save_asset_metadata(asset_metadata, asset_path):
@@ -14,6 +34,12 @@ def remove_asset_metadata(asset_metadata, asset_path):
     asset = input('\nEnter the ID of the asset you want to delete metadata for: ')
 
     del asset_metadata["asset_metadata"][asset]
+    
+    if update_basic_stats:
+        basic_stats = query_quixel_page() # Update basic stats (at top of metadata)
+
+        asset_metadata["total"] = basic_stats["total"]
+        asset_metadata["facets"] = basic_stats["facets"]
 
     save_asset_metadata(asset_metadata, asset_path)
 
