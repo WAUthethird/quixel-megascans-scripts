@@ -3,6 +3,7 @@ import json
 import time
 import random
 import hashlib
+import zipfile
 from pathlib import Path
 from tqdm import tqdm
 
@@ -34,6 +35,20 @@ def calculate_checksum(asset, asset_path):
     return checksum
 
 
+def test_zip_file(asset, asset_path):
+    try:
+        zipped_file = zipfile.ZipFile(asset_path / f"{asset}.zip")
+    except zipfile.BadZipfile as ex:
+        return False
+
+    zip_test = zipped_file.testzip()
+
+    if zip_test is not None:
+        return False
+    else:
+        return True
+
+
 def download_quixel_asset(asset, asset_path, download_id):
     response = requests.get(f"https://assetdownloads.quixel.com/download/{download_id}?preserveStructure=true&url=https://quixel.com/v1/downloads", stream=True)
 
@@ -43,6 +58,7 @@ def download_quixel_asset(asset, asset_path, download_id):
             print(f"\nEncountered error {response.status_code} with asset {asset}! Here is the response from the Quixel server: {json_response}")
         except json.JSONDecodeError:
             print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
+
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         download_quixel_asset(asset, asset_path, download_id)
@@ -58,14 +74,20 @@ def download_quixel_asset(asset, asset_path, download_id):
                 asset_bar.update(len(chunk))
 
             asset_bar.close()
-    except:
-        print(f"\nError while downloading asset {asset}!")
+    except Exception as ex:
+        print(f"\nError while downloading asset {asset}! Exception was {ex}")
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         download_quixel_asset(asset, asset_path, download_id)
 
     if (asset_path / f"{asset}.zip").stat().st_size != asset_length:
         print(f"\nDownload for asset {asset} was incomplete!")
+        print("Waiting 5 seconds and retrying.")
+        time.sleep(5)
+        download_quixel_asset(asset, asset_path, download_id)
+
+    if not test_zip_file(asset, asset_path):
+        print(f"\nDownload for asset {asset} was bad!")
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         download_quixel_asset(asset, asset_path, download_id)
@@ -90,8 +112,14 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
         try:
             json_response = response.json()
             print(f"\nEncountered error {response.status_code}! Here is the response from the Quixel server: {json_response}")
+
+            if "code" in json_response:
+                if json_response["code"] == "ASSET_DOES_NOT_EXIST":
+                    print(f"\nRequested asset {asset} does not exist! Skipping. (you will continue to recieve this message on each run as long as the asset's metadata is still present, use remove_asset_from_metadata.py to remove it)")
+                    return False
         except json.JSONDecodeError:
             print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
+        
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         request_quixel_asset(token, asset, asset_components, asset_path)
@@ -100,6 +128,8 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
         json_response = response.json()
         download_id = json_response["id"]
         download_quixel_asset(asset, asset_path, download_id)
+
+        return True
     except json.JSONDecodeError:
         print(f"Error on decode! Here is the response: {response}")
         print("Waiting 5 seconds and retrying.")
@@ -124,11 +154,11 @@ def download_all_assets(asset_metadata, asset_path):
         type_list.sort()
         asset_components = [{"type": image_map, "mimeType": "image/x-exr"} for image_map in type_list]
         
-        request_quixel_asset(token, asset, asset_components, asset_path)
-
-        checksum = calculate_checksum(asset, asset_path)
-        asset_metadata["asset_metadata"][asset]["sha256"] = checksum
-        save_asset_metadata(asset_metadata, asset_path)
+        asset_result = request_quixel_asset(token, asset, asset_components, asset_path)
+        if asset_result:
+            checksum = calculate_checksum(asset, asset_path)
+            asset_metadata["asset_metadata"][asset]["sha256"] = checksum
+            save_asset_metadata(asset_metadata, asset_path)
 
         time.sleep(round(random.uniform(0.1, 1), 2))
 

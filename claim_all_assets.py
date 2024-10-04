@@ -67,6 +67,8 @@ def claim_quixel_asset(token, asset):
         if "code" in json_response:
             if json_response["code"] == "USER_ALREADY_OWNS_ASSET": # This is just here as a sanity check since we're already skipping claimed assets
                 print(f"Requested asset {asset} is already claimed! Skipping.")
+            elif json_response["code"] == "ASSET_DOES_NOT_EXIST": # I think this is the right code, but I already have all assets and am unable to check. Hopefully this catches everything.
+                print(f"Requested asset {asset} does not exist! Skipping. (you will continue to recieve this message on each run as long as the asset's metadata is still present, use remove_asset_from_metadata.py to remove it)")
             elif json_response["isError"]: # This might happen if the token invalidates midway, but it's not super difficult to just restart the script to resume.
                 print(f"The server accepted the request, but returned an error. Here is the response: {json_response}")
                 print("Waiting 5 seconds and retrying.")
