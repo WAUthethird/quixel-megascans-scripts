@@ -116,7 +116,10 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
             if "code" in json_response:
                 if json_response["code"] == "ASSET_DOES_NOT_EXIST":
                     print(f"\nRequested asset {asset} does not exist! Skipping. (you will continue to recieve this message on each run as long as the asset's metadata is still present, use remove_asset_from_metadata.py to remove it)")
-                    return False
+                    return token, False
+            if "message" in json_response:
+                if json_response["message"] == "Expired token":
+                    token = extract_token(input("Your Quixel token has expired! Please input a refreshed token: "))
         except json.JSONDecodeError:
             print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
         
@@ -129,7 +132,7 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
         download_id = json_response["id"]
         download_quixel_asset(asset, asset_path, download_id)
 
-        return True
+        return token, True
     except json.JSONDecodeError:
         print(f"Error on decode! Here is the response: {response}")
         print("Waiting 5 seconds and retrying.")
@@ -154,7 +157,7 @@ def download_all_assets(asset_metadata, asset_path):
         type_list.sort()
         asset_components = [{"type": image_map, "mimeType": "image/x-exr"} for image_map in type_list]
         
-        asset_result = request_quixel_asset(token, asset, asset_components, asset_path)
+        token, asset_result = request_quixel_asset(token, asset, asset_components, asset_path)
         if asset_result:
             checksum = calculate_checksum(asset, asset_path)
             asset_metadata["asset_metadata"][asset]["sha256"] = checksum
