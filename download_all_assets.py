@@ -1,7 +1,6 @@
 import requests
 import json
 import time
-import random
 import hashlib
 import zipfile
 from pathlib import Path
@@ -173,8 +172,6 @@ def download_all_assets(asset_metadata, asset_path, checksums):
             checksum = calculate_checksum(asset, asset_path)
             checksums[asset] = checksum
             save_checksums(checksums, asset_path)
-
-        time.sleep(round(random.uniform(0.1, 1), 2))
 
     #save_asset_metadata(asset_metadata, asset_path)
 
