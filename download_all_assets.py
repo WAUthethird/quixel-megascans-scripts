@@ -147,11 +147,12 @@ def download_all_assets(asset_metadata, asset_path):
     asset_categories = list(set([asset["full_metadata"]["semanticTags"]["asset_type"] for asset in temp_assets_to_download]))
 
     print(f"\n{asset_metadata["total"]} total assets in asset metadata.")
-    selected_asset_type = input(f"\nWhich one of these asset categories would you like to download? {asset_categories}: ")
+    print(f"{len(temp_assets_to_download)} total assets not yet downloaded.")
+    selected_asset_type = input(f"\nWhich one of these asset categories would you like to download? {", ".join(asset_categories)}: ")
 
     assets_to_download = [asset["full_metadata"]["id"] for asset in temp_assets_to_download if asset["full_metadata"]["semanticTags"]["asset_type"] == selected_asset_type]
 
-    print(f"{len(assets_to_download)} assets to download.")
+    print(f"\n{len(assets_to_download)} assets to download.")
     print("Do NOT quit the program between downloads, as this is likely to destroy your metadata file while the .zip checksum is being saved. It is safe to quit while a file is being downloaded. When you restart the program, it will resume where it left off.")
 
     for asset in tqdm(assets_to_download):
