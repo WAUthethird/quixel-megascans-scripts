@@ -7,7 +7,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 
-# All possible component types: ["albedo", "ao", "brush", "bump", "cavity", "curvature", "diffuse", "displacement", "displacment", "f", "fuzz", "gloss", "mask", "metalness", "normal", "normalbump", "normalobject", "occlusion", "opacity", "roughness", "specular", "thickness", "translucency", "transmission"]
+# All possible component types: albedo, ao, brush, bump, cavity, curvature, diffuse, displacement, displacment, f, fuzz, gloss, mask, metalness, normal, normalbump, normalobject, occlusion, opacity, roughness, specular, thickness, translucency, transmission
 
 # This script should be run with a COMPLETE asset_metadata.json file in the directory you wish to download assets to. Simply copy it from the directory this script is in. Also, be sure that you have claimed all assets.
 
