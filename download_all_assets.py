@@ -18,6 +18,11 @@ def save_asset_metadata(asset_metadata, asset_path):
         json.dump(asset_metadata, f, ensure_ascii=False, indent=4)
 
 
+def save_checksums(checksums, asset_path):
+    with open(asset_path / "checksums.json", "w", encoding="utf-8") as f:
+        json.dump(checksums, f, ensure_ascii=False, indent=4)
+
+
 def extract_token(token):
     if token.startswith("token:\""): # Copying from Firefox dev tools, remove extra json data
         token = token.removeprefix("token:\"")
@@ -140,20 +145,20 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
         request_quixel_asset(token, asset, asset_components, asset_path)
 
 
-def download_all_assets(asset_metadata, asset_path):
+def download_all_assets(asset_metadata, asset_path, checksums):
     token = extract_token(input("Enter your Quixel token (refer to the readme for instructions): "))
 
-    temp_assets_to_download = [asset for asset in asset_metadata["asset_metadata"].values() if "sha256" not in asset]
-    asset_categories = list(set([asset["full_metadata"]["semanticTags"]["asset_type"] for asset in temp_assets_to_download]))
+    temp_assets_to_download = list(set(checksums.keys()) ^ set(asset_metadata["asset_metadata"].keys()))
+    asset_categories = list(set([asset["full_metadata"]["semanticTags"]["asset_type"] for asset in asset_metadata["asset_metadata"].values() if asset["full_metadata"]["id"] in temp_assets_to_download]))
 
     print(f"\n{asset_metadata["total"]} total assets in asset metadata.")
     print(f"{len(temp_assets_to_download)} total assets not yet downloaded.")
     selected_asset_type = input(f"\nWhich one of these asset categories would you like to download? {", ".join(asset_categories)}: ")
 
-    assets_to_download = [asset["full_metadata"]["id"] for asset in temp_assets_to_download if asset["full_metadata"]["semanticTags"]["asset_type"] == selected_asset_type]
+    assets_to_download = [asset["full_metadata"]["id"] for asset in asset_metadata["asset_metadata"].values() if asset["full_metadata"]["semanticTags"]["asset_type"] == selected_asset_type and asset["full_metadata"]["id"] in temp_assets_to_download]
 
     print(f"\n{len(assets_to_download)} assets to download.")
-    print("Do NOT quit the program between downloads, as this is likely to destroy your metadata file while the .zip checksum is being saved. It is safe to quit while a file is being downloaded. When you restart the program, it will resume where it left off.")
+    print("Do NOT quit the program between downloads, as this is likely to destroy your checksum file while the .zip checksum is being saved. It is safe to quit while a file is being downloaded. When you restart the program, it will resume where it left off.")
 
     for asset in tqdm(assets_to_download):
         if "components" in asset_metadata["asset_metadata"][asset]["full_metadata"]: # Find all components for this asset, necessary to explicitly request .exr
@@ -166,14 +171,14 @@ def download_all_assets(asset_metadata, asset_path):
         token, asset_result = request_quixel_asset(token, asset, asset_components, asset_path)
         if asset_result:
             checksum = calculate_checksum(asset, asset_path)
-            asset_metadata["asset_metadata"][asset]["sha256"] = checksum
-            save_asset_metadata(asset_metadata, asset_path)
+            checksums[asset] = checksum
+            save_checksums(checksums, asset_path)
 
         time.sleep(round(random.uniform(0.1, 1), 2))
 
-    save_asset_metadata(asset_metadata, asset_path)
+    #save_asset_metadata(asset_metadata, asset_path)
 
-    print(f"Finished downloading {len(assets_to_download)} assets!")
+    print(f"\nFinished downloading {len(assets_to_download)} assets!")
 
 
 asset_path = Path(input("Enter the FULL path of the folder you want to download assets to: "))
@@ -184,10 +189,16 @@ try:
         asset_metadata = json.load(f)
 except FileNotFoundError:
     print(f"\n\nCouldn't find asset_metadata.json in the directory you selected, {asset_path}")
-    print("\nFor a proper archive, this program utilizes an asset_metadata.json file in the same directory as the assets to store SHA256 hashes for each .zip file.")
-    print("Additionally, this lets the program determine which files have yet to be downloaded, so you can resume right where you left off.")
+    print("\nFor a proper archive, this program utilizes an asset_metadata.json file in the same directory as the assets to store SHA256 hashes for each .zip file when downloading is finished.")
+    print("Additionally, this file lets this program request .exr for the asset textures.")
     print(f"\nSo, to run this program, simply copy your COMPLETE (basic metadata will not work!) asset_metadata.json file (made using get_all_complete_asset_metadata.py) to {asset_path}\n")
     input("Press Enter to exit...")
 
 if asset_metadata:
-    download_all_assets(asset_metadata, asset_path)
+    try:
+        with open(asset_path / "checksums.json", "r", encoding="utf-8") as f:
+            checksums = json.load(f)
+    except FileNotFoundError:
+        checksums = {}
+
+    download_all_assets(asset_metadata, asset_path, checksums)
