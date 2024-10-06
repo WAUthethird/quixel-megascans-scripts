@@ -143,9 +143,14 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
 def download_all_assets(asset_metadata, asset_path):
     token = extract_token(input("Enter your Quixel token (refer to the readme for instructions): "))
 
-    assets_to_download = [asset["full_metadata"]["id"] for asset in asset_metadata["asset_metadata"].values() if "sha256" not in asset]
+    temp_assets_to_download = [asset for asset in asset_metadata["asset_metadata"].values() if "sha256" not in asset]
+    asset_categories = list(set([asset["full_metadata"]["semanticTags"]["asset_type"] for asset in temp_assets_to_download]))
 
     print(f"\n{asset_metadata["total"]} total assets in asset metadata.")
+    selected_asset_type = input(f"\nWhich one of these asset categories would you like to download? {asset_categories}: ")
+
+    assets_to_download = [asset["full_metadata"]["id"] for asset in temp_assets_to_download if asset["full_metadata"]["semanticTags"]["asset_type"] == selected_asset_type]
+
     print(f"{len(assets_to_download)} assets to download.")
     print("Do NOT quit the program between downloads, as this is likely to destroy your metadata file while the .zip checksum is being saved. It is safe to quit while a file is being downloaded. When you restart the program, it will resume where it left off.")
 
