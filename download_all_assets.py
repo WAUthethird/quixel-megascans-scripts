@@ -143,6 +143,13 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
         time.sleep(5)
         request_quixel_asset(token, asset, asset_components, asset_path)
 
+    # We should not be able to get to this point in the script at all, but I have seen it happen multiple times for some reason.
+    # No idea why, but hopefully this catches it.
+    print("Something really weird happened!") 
+    print("Waiting 5 seconds and retrying.")
+    time.sleep(5)
+    request_quixel_asset(token, asset, asset_components, asset_path)
+
 
 def download_all_assets(asset_metadata, asset_path, checksums):
     token = extract_token(input("Enter your Quixel token (refer to the readme for instructions): "))
