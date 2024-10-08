@@ -54,99 +54,92 @@ def test_zip_file(asset, asset_path):
 
 
 def download_quixel_asset(asset, asset_path, download_id):
-    response = requests.get(f"https://assetdownloads.quixel.com/download/{download_id}?preserveStructure=true&url=https://quixel.com/v1/downloads", stream=True)
+    while True:
+        response = requests.get(f"https://assetdownloads.quixel.com/download/{download_id}?preserveStructure=true&url=https://quixel.com/v1/downloads", stream=True)
 
-    if response.status_code != 200:
-        try:
-            json_response = response.json()
-            print(f"\nEncountered error {response.status_code} with asset {asset}! Here is the response from the Quixel server: {json_response}")
-        except json.JSONDecodeError:
-            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
+        if response.status_code != 200:
+            try:
+                json_response = response.json()
+                print(f"\nEncountered error {response.status_code} with asset {asset}! Here is the response from the Quixel server: {json_response}")
+            except json.JSONDecodeError:
+                print(f"\nEncountered error while downloading asset {asset}! (Recieved status code {response.status_code} and response {response} from Quixel server)")
 
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        download_quixel_asset(asset, asset_path, download_id)
+            print("Waiting 5 seconds and retrying.")
+            time.sleep(5)
+        else:
+            asset_length = int(response.headers["Content-Length"])
 
-    asset_length = int(response.headers["Content-Length"])
+            try:
+                with open(asset_path / f"{asset}.zip", "wb") as f:
+                    asset_bar = tqdm(desc=f"Downloading asset: {asset}", total=asset_length, unit="B", unit_scale=True, position=1, leave=False)
 
-    try:
-        with open(asset_path / f"{asset}.zip", "wb") as f:
-            asset_bar = tqdm(desc=f"Downloading asset: {asset}", total=asset_length, unit="B", unit_scale=True, position=1, leave=False)
+                    for chunk in response.iter_content(chunk_size=(1024*1024)*8):
+                        f.write(chunk)
+                        asset_bar.update(len(chunk))
 
-            for chunk in response.iter_content(chunk_size=(1024*1024)*8):
-                f.write(chunk)
-                asset_bar.update(len(chunk))
+                    asset_bar.close()
 
-            asset_bar.close()
-    except Exception as ex:
-        print(f"\nError while downloading asset {asset}! Exception was {ex}")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        download_quixel_asset(asset, asset_path, download_id)
-
-    if (asset_path / f"{asset}.zip").stat().st_size != asset_length:
-        print(f"\nDownload for asset {asset} was incomplete!")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        download_quixel_asset(asset, asset_path, download_id)
-
-    if not test_zip_file(asset, asset_path):
-        print(f"\nDownload for asset {asset} was bad!")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        download_quixel_asset(asset, asset_path, download_id)
+                if (asset_path / f"{asset}.zip").stat().st_size != asset_length:
+                    print(f"\nDownload for asset {asset} was incomplete!")
+                    print("Waiting 5 seconds and retrying.")
+                    time.sleep(5)
+                elif not test_zip_file(asset, asset_path):
+                    print(f"\nDownload for asset {asset} was bad!")
+                    print("Waiting 5 seconds and retrying.")
+                    time.sleep(5)
+                else:
+                    # Success!
+                    break
+            except Exception as ex:
+                print(f"\nError while downloading asset {asset}! Exception was {ex}")
+                print("Waiting 5 seconds and retrying.")
+                time.sleep(5)
 
 
 def request_quixel_asset(token, asset, asset_components, asset_path):
-    headers = {"Authorization": token}
+    while True:
+        headers = {"Authorization": token}
 
-    data = {"asset": asset,
-            "config": {"highpoly": True,
-                       "lowerlod_meshes": True,
-                       "lowerlod_normals": True,
-                       "ztool": True,
-                       "brushes": True,
-                       "meshMimeType": "application/x-fbx",
-                       "albedo_lods": True},
-            "components": asset_components}
+        data = {"asset": asset,
+                "config": {"highpoly": True,
+                        "lowerlod_meshes": True,
+                        "lowerlod_normals": True,
+                        "ztool": True,
+                        "brushes": True,
+                        "meshMimeType": "application/x-fbx",
+                        "albedo_lods": True},
+                "components": asset_components}
 
-    response = requests.post("https://quixel.com/v1/downloads", headers=headers, json=data)
+        response = requests.post("https://quixel.com/v1/downloads", headers=headers, json=data)
 
-    if response.status_code != 200:
-        try:
-            json_response = response.json()
-            print(f"\nEncountered error {response.status_code}! Here is the response from the Quixel server: {json_response}")
+        if response.status_code != 200:
+            try:
+                json_response = response.json()
+                print(f"\nEncountered error {response.status_code}! Here is the response from the Quixel server: {json_response}")
 
-            if "code" in json_response:
-                if json_response["code"] == "ASSET_DOES_NOT_EXIST":
-                    print(f"\nRequested asset {asset} does not exist! Skipping. (you will continue to recieve this message on each run as long as the asset's metadata is still present, use remove_asset_from_metadata.py to remove it)")
-                    return token, False
-            if "message" in json_response:
-                if json_response["message"] == "Expired token":
-                    token = extract_token(input("Your Quixel token has expired! Please input a refreshed token: "))
-        except json.JSONDecodeError:
-            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
-        
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        request_quixel_asset(token, asset, asset_components, asset_path)
-    else:
-        try:
-            json_response = response.json()
-            download_id = json_response["id"]
-            download_quixel_asset(asset, asset_path, download_id)
-
-            return True
-        except json.JSONDecodeError:
-            print(f"Error on decode! Here is the response: {response}")
+                if "code" in json_response:
+                    if json_response["code"] == "ASSET_DOES_NOT_EXIST":
+                        print(f"\nRequested asset {asset} does not exist! Skipping. (you will continue to recieve this message on each run as long as the asset's metadata is still present, use remove_asset_from_metadata.py to remove it)")
+                        return token, False
+                if "message" in json_response:
+                    if json_response["message"] == "Expired token":
+                        token = extract_token(input("Your Quixel token has expired! Please input a refreshed token: "))
+            except json.JSONDecodeError:
+                print(f"\nError on decode with code {response.status_code}! Here is the response: {response}")
+            
             print("Waiting 5 seconds and retrying.")
             time.sleep(5)
-            request_quixel_asset(token, asset, asset_components, asset_path)
+        else:
+            try:
+                json_response = response.json()
+                download_id = json_response["id"]
+                download_quixel_asset(asset, asset_path, download_id)
 
-    print("\nSomething really weird happened!") 
-    print("Waiting 5 seconds and retrying.")
-    time.sleep(5)
-    request_quixel_asset(token, asset, asset_components, asset_path)
+                return token, True
+            except json.JSONDecodeError:
+                print(f"Error on decode! Here is the response: {response}")
+                print("Waiting 5 seconds and retrying.")
+                time.sleep(5)
 
 
 def download_all_assets(asset_metadata, asset_path, checksums):
