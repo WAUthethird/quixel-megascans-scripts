@@ -130,22 +130,20 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
         print("Waiting 5 seconds and retrying.")
         time.sleep(5)
         request_quixel_asset(token, asset, asset_components, asset_path)
+    else:
+        try:
+            json_response = response.json()
+            download_id = json_response["id"]
+            download_quixel_asset(asset, asset_path, download_id)
 
-    try:
-        json_response = response.json()
-        download_id = json_response["id"]
-        download_quixel_asset(asset, asset_path, download_id)
+            return True
+        except json.JSONDecodeError:
+            print(f"Error on decode! Here is the response: {response}")
+            print("Waiting 5 seconds and retrying.")
+            time.sleep(5)
+            request_quixel_asset(token, asset, asset_components, asset_path)
 
-        return token, True
-    except json.JSONDecodeError:
-        print(f"Error on decode! Here is the response: {response}")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        request_quixel_asset(token, asset, asset_components, asset_path)
-
-    # We should not be able to get to this point in the script at all, but I have seen it happen multiple times for some reason.
-    # No idea why, but hopefully this catches it.
-    print("Something really weird happened!") 
+    print("\nSomething really weird happened!") 
     print("Waiting 5 seconds and retrying.")
     time.sleep(5)
     request_quixel_asset(token, asset, asset_components, asset_path)
