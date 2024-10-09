@@ -11,18 +11,18 @@ from tqdm import tqdm
 
 
 def query_quixel_page(limit, page):
-    params = {"limit": limit, # Max limit is 200
-              "page": page}
+    while True:
+        params = {"limit": limit, # Max limit is 200
+                  "page": page}
 
-    response = requests.get("https://quixel.com/v1/assets", params=params)
+        response = requests.get("https://quixel.com/v1/assets", params=params)
 
-    if response.status_code != 200:
-        print(f"\nEncountered error with page {page}! (Recieved status code {response.status_code} from Quixel server)")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        query_quixel_page(limit, page)
-
-    return response.json()
+        if response.status_code != 200:
+            print(f"\nEncountered error with page {page}! (Recieved status code {response.status_code} from Quixel server)")
+            print("Waiting 5 seconds and retrying.")
+            time.sleep(5)
+        else:
+            return response.json()
 
 
 # Get initial metadata

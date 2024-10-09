@@ -11,23 +11,22 @@ from tqdm import tqdm
 
 
 def query_quixel_asset(asset):
-    response = requests.get(f"https://quixel.com/v1/assets/{asset}")
+    while True:
+        response = requests.get(f"https://quixel.com/v1/assets/{asset}")
 
-    if response.status_code != 200:
-        print(f"\nEncountered error with asset {asset}! (Recieved status code {response.status_code} from Quixel server)")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        query_quixel_asset(asset)
+        if response.status_code != 200:
+            print(f"\nEncountered error with asset {asset}! (Recieved status code {response.status_code} from Quixel server)")
+            print("Waiting 5 seconds and retrying.")
+            time.sleep(5)
+        else:
+            try:
+                json_response = response.json()
 
-    try:
-        json_response = response.json()
-    except json.JSONDecodeError:
-        print(f"Error on decode! Here is the response: {response}")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        query_quixel_asset(asset)
-
-    return json_response
+                return json_response
+            except json.JSONDecodeError:
+                print(f"Error on decode! Here is the response: {response}")
+                print("Waiting 5 seconds and retrying.")
+                time.sleep(5)
 
 
 def get_metadata(asset_metadata):

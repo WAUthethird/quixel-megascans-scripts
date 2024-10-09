@@ -11,18 +11,18 @@ update_basic_stats = True # Set to False if you don't want the stats at the top 
 
 
 def query_quixel_page():
-    params = {"limit": 1,
-              "page": 1}
+    while True:
+        params = {"limit": 1,
+                  "page": 1}
 
-    response = requests.get("https://quixel.com/v1/assets", params=params)
+        response = requests.get("https://quixel.com/v1/assets", params=params)
 
-    if response.status_code != 200:
-        print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        query_quixel_page()
-
-    return response.json()
+        if response.status_code != 200:
+            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
+            print("Waiting 5 seconds and retrying.")
+            time.sleep(5)
+        else:
+            return response.json()
 
 
 def save_asset_metadata(asset_metadata, asset_path):
@@ -31,9 +31,10 @@ def save_asset_metadata(asset_metadata, asset_path):
 
 
 def remove_asset_metadata(asset_metadata, asset_path):
-    asset = input('\nEnter the ID of the asset you want to delete metadata for: ')
+    assets = input('\nEnter the ID of the asset(s) you want to delete metadata for, separated by commas (no spaces!) if multiple: ')
 
-    del asset_metadata["asset_metadata"][asset]
+    for asset in assets.split(","):
+        del asset_metadata["asset_metadata"][asset]
     
     if update_basic_stats:
         basic_stats = query_quixel_page() # Update basic stats (at top of metadata)
@@ -43,7 +44,7 @@ def remove_asset_metadata(asset_metadata, asset_path):
 
     save_asset_metadata(asset_metadata, asset_path)
 
-    print('\nAsset deleted and metadata saved!')
+    print('\nAsset(s) deleted and metadata saved!')
 
 
 asset_path = Path(input("Enter the FULL path of the folder asset_metadata.json is in: "))

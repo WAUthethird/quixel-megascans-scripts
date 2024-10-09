@@ -102,12 +102,12 @@ def request_quixel_asset(token, asset, asset_components, asset_path):
 
         data = {"asset": asset,
                 "config": {"highpoly": True,
-                        "lowerlod_meshes": True,
-                        "lowerlod_normals": True,
-                        "ztool": True,
-                        "brushes": True,
-                        "meshMimeType": "application/x-fbx",
-                        "albedo_lods": True},
+                           "lowerlod_meshes": True,
+                           "lowerlod_normals": True,
+                           "ztool": True,
+                           "brushes": True,
+                           "meshMimeType": "application/x-fbx",
+                           "albedo_lods": True},
                 "components": asset_components}
 
         response = requests.post("https://quixel.com/v1/downloads", headers=headers, json=data)

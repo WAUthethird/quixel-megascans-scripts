@@ -21,64 +21,66 @@ def extract_token(token):
 
 
 def check_already_claimed(token):
-    headers = {"Authorization": token}
+    while True:
+        headers = {"Authorization": token}
 
-    response = requests.get("https://quixel.com/v1/assets/acquired", headers=headers)
+        response = requests.get("https://quixel.com/v1/assets/acquired", headers=headers)
 
-    if response.status_code != 200:
-        try:
-            json_response = response.json()
-            print(f"\nEncountered error {response.status_code}! Here is the response from the Quixel server: {json_response}")
-        except json.JSONDecodeError:
-            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        check_already_claimed(token)
+        if response.status_code != 200:
+            try:
+                json_response = response.json()
+                print(f"\nEncountered error {response.status_code}! Here is the response from the Quixel server: {json_response}")
+            except json.JSONDecodeError:
+                print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
+            print("Waiting 5 seconds and retrying.")
+            time.sleep(5)
+        else:
+            try:
+                json_response = response.json()
 
-    try:
-        json_response = response.json()
-    except json.JSONDecodeError:
-        print(f"Error on decode! Here is the response: {response}")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        check_already_claimed(token)
-    
-    return [asset["assetID"] for asset in json_response]
+                return [asset["assetID"] for asset in json_response]
+            except json.JSONDecodeError:
+                print(f"Error on decode! Here is the response: {response}")
+                print("Waiting 5 seconds and retrying.")
+                time.sleep(5)
 
 
 def claim_quixel_asset(token, asset):
-    headers = {"Authorization": token}
+    while True:
+        headers = {"Authorization": token}
 
-    response = requests.post("https://quixel.com/v1/acl", headers=headers, json={"assetID": asset})
+        response = requests.post("https://quixel.com/v1/acl", headers=headers, json={"assetID": asset})
 
-    if response.status_code != 200:
-        try:
-            json_response = response.json()
-            print(f"\nEncountered error {response.status_code} with asset {asset}! Here is the response from the Quixel server: {json_response}")
-        except json.JSONDecodeError:
-            print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        claim_quixel_asset(token, asset)
+        if response.status_code != 200:
+            try:
+                json_response = response.json()
+                print(f"\nEncountered error {response.status_code} with asset {asset}! Here is the response from the Quixel server: {json_response}")
+            except json.JSONDecodeError:
+                print(f"\nEncountered error! (Recieved status code {response.status_code} from Quixel server)")
+            print("Waiting 5 seconds and retrying.")
+            time.sleep(5)
+        else:
+            try:
+                json_response = response.json()
 
-    try:
-        json_response = response.json()
-
-        if "code" in json_response:
-            if json_response["code"] == "USER_ALREADY_OWNS_ASSET": # This is just here as a sanity check since we're already skipping claimed assets
-                print(f"Requested asset {asset} is already claimed! Skipping.")
-            elif json_response["code"] == "ASSET_DOES_NOT_EXIST": # I think this is the right code, but I already have all assets and am unable to check. Hopefully this catches everything.
-                print(f"Requested asset {asset} does not exist! Skipping. (you will continue to recieve this message on each run as long as the asset's metadata is still present, use remove_asset_from_metadata.py to remove it)")
-            elif json_response["isError"]: # This might happen if the token invalidates midway, but it's not super difficult to just restart the script to resume.
-                print(f"The server accepted the request, but returned an error. Here is the response: {json_response}")
+                if "code" in json_response:
+                    if json_response["code"] == "USER_ALREADY_OWNS_ASSET": # This is just here as a sanity check since we're already skipping claimed assets
+                        print(f"Requested asset {asset} is already claimed! Skipping.")
+                        break
+                    elif json_response["code"] == "ASSET_DOES_NOT_EXIST": # I think this is the right code, but I already have all assets and am unable to check. Hopefully this catches everything.
+                        print(f"Requested asset {asset} does not exist! Skipping. (you will continue to recieve this message on each run as long as the asset's metadata is still present, use remove_asset_from_metadata.py to remove it)")
+                        break
+                    elif json_response["isError"]: # This might happen if the token invalidates midway, but it's not super difficult to just restart the script to resume.
+                        print(f"The server accepted the request, but returned an error. Here is the response: {json_response}")
+                        print("Waiting 5 seconds and retrying.")
+                        time.sleep(5)
+                else:
+                    # Success!
+                    break
+            except json.JSONDecodeError:
+                print(f"Error on decode! Here is the response: {response}")
                 print("Waiting 5 seconds and retrying.")
                 time.sleep(5)
-                claim_quixel_asset(token, asset)
-    except json.JSONDecodeError:
-        print(f"Error on decode! Here is the response: {response}")
-        print("Waiting 5 seconds and retrying.")
-        time.sleep(5)
-        claim_quixel_asset(token, asset)
 
 
 def claim_all_assets(asset_metadata):

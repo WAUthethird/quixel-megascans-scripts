@@ -2,7 +2,7 @@
 A collection of Python scripts to facilitate claiming and downloading the *entire* [Quixel Megascans](https://quixel.com/) collection before it becomes [fully paid in 2025](https://www.unrealengine.com/en-US/blog/fab-content-marketplace-launches-in-october-publishing-portal-opens-today).
 
 ## Requirements
-- **Python 3.12** (3.11 and prior do not work!)
+- **Python 3.12 or higher** (3.11 and prior do not work!)
 - **requests** (pip)
 - **tqdm** (pip)
 
@@ -58,8 +58,10 @@ I initially developed these scripts in a private branch while I did silly things
 Please note that these scripts have been developed with an emphasis on archival purposes, so scripts like [download_all_assets.py](download_all_assets.py) may not do what you want/expect at first. That script is straight and to the point - it downloads all assets to a single directory, and doesn't bother with things like asset categories. There is also (intentionally) *no* limit on retries.
 
 ## Removed Assets
-A few assets have been removed from Quixel since I created the [*basic*](basic_asset_metadata.tar.zst) and [*complete*](complete_asset_metadata.tar.zst) stages of `asset_metadata.json`. I am currently downloading the entire collection, so I will continue to add assets to this list as I encounter them. You can use the newly added [remove_asset_from_metadata.py](remove_asset_from_metadata.py) script to remove these assets from your metadata as well.
-
-Once I am finished downloading everything, I will update the [*basic*](basic_asset_metadata.tar.zst) and [*complete*](complete_asset_metadata.tar.zst) files to reflect these changes. I do intend on making a fully-featured `asset_metadata.json` updating script (or at least adding updating functionality to [get_all_basic_asset_metadata.py](get_all_basic_asset_metadata.py) and [get_all_complete_asset_metadata.py](get_all_complete_asset_metadata.py)) that would handle additions/removals/updates in bulk, hopefully in the near future.
+A few assets have been removed from Quixel since I initially created these scripts. If you still have these assets in your `asset_metadata.json` file, you can use the [remove_asset_from_metadata.py](remove_asset_from_metadata.py) script to remove them. The latest versions of the [*basic*](basic_asset_metadata.tar.zst) and [*complete*](complete_asset_metadata.tar.zst) stages of `asset_metadata.json` do not have these assets. My thanks to @DR-Mello for getting me the IDs for the last 4 deleted assets.
 
 - `xgkmfcya`
+- `wfgpebvaw`
+- `we2rbizaw`
+- `vktudjsaw`
+- `vktffapaw`
