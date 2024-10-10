@@ -54,11 +54,8 @@ def test_zip_file(asset, asset_path):
 
 
 def download_quixel_asset(asset, asset_path, download_id):
-    start_bytes = 0
-
     while True:
-        headers = {"Range": f"bytes={start_bytes}-"}
-        response = requests.get(f"https://assetdownloads.quixel.com/download/{download_id}?preserveStructure=true&url=https://quixel.com/v1/downloads", headers=headers, stream=True)
+        response = requests.get(f"https://assetdownloads.quixel.com/download/{download_id}?preserveStructure=true&url=https://quixel.com/v1/downloads", stream=True)
 
         if response.status_code != 200:
             try:
@@ -73,15 +70,8 @@ def download_quixel_asset(asset, asset_path, download_id):
             asset_length = int(response.headers["Content-Length"])
 
             try:
-                if start_bytes == 0:
-                    file_mode = "wb"
-                else:
-                    file_mode = "ab"
-
-                with open(asset_path / f"{asset}.zip", file_mode) as f:
+                with open(asset_path / f"{asset}.zip", "wb") as f:
                     asset_bar = tqdm(desc=f"Downloading asset: {asset}", total=asset_length, unit="B", unit_scale=True, position=1, leave=False)
-
-                    asset_bar.update(start_bytes)
 
                     for chunk in response.iter_content(chunk_size=(1024*1024)*8):
                         f.write(chunk)
@@ -91,8 +81,7 @@ def download_quixel_asset(asset, asset_path, download_id):
 
                 if (asset_path / f"{asset}.zip").stat().st_size != asset_length:
                     print(f"\nDownload for asset {asset} was incomplete!")
-                    print("Waiting 5 seconds and resuming.")
-                    start_bytes = (asset_path / f"{asset}.zip").stat().st_size
+                    print("Waiting 5 seconds and retrying.")
                     time.sleep(5)
                 elif not test_zip_file(asset, asset_path):
                     print(f"\nDownload for asset {asset} was bad!")
