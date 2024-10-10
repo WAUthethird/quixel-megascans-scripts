@@ -58,7 +58,7 @@ I initially developed these scripts in a private branch while I did silly things
 Please note that these scripts have been developed with an emphasis on archival purposes, so scripts like [download_all_assets.py](download_all_assets.py) may not do what you want/expect at first. That script is straight and to the point - it downloads all assets to a single directory, and doesn't bother with things like asset categories. There is also (intentionally) *no* limit on retries.
 
 ## Removed Assets
-A few assets have been removed from Quixel since I initially created these scripts. If you still have these assets in your `asset_metadata.json` file, you can use the [remove_asset_from_metadata.py](remove_asset_from_metadata.py) script to remove them. The latest versions of the [*basic*](basic_asset_metadata.tar.zst) and [*complete*](complete_asset_metadata.tar.zst) stages of `asset_metadata.json` do not have these assets. My thanks to @DR-Mello for getting me the IDs for the last 4 deleted assets.
+A few assets have been removed from Quixel since I initially created these scripts. If you still have these assets in your `asset_metadata.json` file, you can use the [remove_asset_from_metadata.py](remove_asset_from_metadata.py) script to remove them. The latest versions of the [*basic*](basic_asset_metadata.tar.zst) and [*complete*](complete_asset_metadata.tar.zst) stages of `asset_metadata.json` do not have these assets. My thanks to @DR-Mello for getting me the IDs for the last 4 removed assets.
 
 - `xgkmfcya`
 - `wfgpebvaw`
