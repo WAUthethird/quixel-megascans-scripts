@@ -73,7 +73,12 @@ def download_quixel_asset(asset, asset_path, download_id):
             asset_length = int(response.headers["Content-Length"])
 
             try:
-                with open(asset_path / f"{asset}.zip", "wb") as f:
+                if start_bytes == 0:
+                    file_mode = "wb"
+                else:
+                    file_mode = "ab"
+
+                with open(asset_path / f"{asset}.zip", file_mode) as f:
                     asset_bar = tqdm(desc=f"Downloading asset: {asset}", total=asset_length-start_bytes, unit="B", unit_scale=True, position=1, leave=False)
 
                     for chunk in response.iter_content(chunk_size=(1024*1024)*8):
