@@ -79,7 +79,9 @@ def download_quixel_asset(asset, asset_path, download_id):
                     file_mode = "ab"
 
                 with open(asset_path / f"{asset}.zip", file_mode) as f:
-                    asset_bar = tqdm(desc=f"Downloading asset: {asset}", total=asset_length-start_bytes, unit="B", unit_scale=True, position=1, leave=False)
+                    asset_bar = tqdm(desc=f"Downloading asset: {asset}", total=asset_length, unit="B", unit_scale=True, position=1, leave=False)
+
+                    asset_bar.update(start_bytes)
 
                     for chunk in response.iter_content(chunk_size=(1024*1024)*8):
                         f.write(chunk)
