@@ -149,6 +149,7 @@ def download_all_assets(asset_metadata, asset_path, checksums):
     asset_categories = list(set([asset["full_metadata"]["semanticTags"]["asset_type"] for asset in asset_metadata["asset_metadata"].values() if asset["full_metadata"]["id"] in temp_assets_to_download]))
 
     print(f"\n{asset_metadata["total"]} total assets in asset metadata.")
+    print(f"{len(checksums)} total assets downloaded.")
     print(f"{len(temp_assets_to_download)} total assets not yet downloaded.")
     selected_asset_type = input(f"\nWhich one of these asset categories would you like to download? {", ".join(asset_categories)}: ")
 
