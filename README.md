@@ -1,6 +1,10 @@
 # Quixel Megascans Scripts
 A collection of Python scripts to facilitate claiming and downloading the *entire* [Quixel Megascans](https://quixel.com/) collection before it becomes [fully paid in 2025](https://www.unrealengine.com/en-US/blog/fab-content-marketplace-launches-in-october-publishing-portal-opens-today).
 
+# Update: October 22, 2024
+[Fab](https://www.fab.com), Epic's single replacement for a number of their asset marketplaces and libraries (including Quixel) has just been released! With this release, all assets may be claimed in a single click [here](https://www.fab.com/megascans-free).
+I will be adding a new version of [download_all_assets.py](download_all_assets.py) updated for Fab as soon as possible.
+
 ## Requirements
 - **Python 3.12 or higher** (3.11 and prior do not work!)
 - **requests** (pip)
