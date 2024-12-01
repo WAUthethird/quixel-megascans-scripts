@@ -44,7 +44,7 @@ For convenience, I've compressed the [*basic*](basic_asset_metadata.tar.zst) and
 If you're on Windows, something like [7-Zip-zstd](https://github.com/mcmilk/7-Zip-zstd) should be able to decompress these.
 
 ### Claiming Assets
-## This section is now irrelevant. You can claim all legacy assets and all Fab assets with one click (do it before January 1st!) on Quixel.com and Fab.com. The old instructions follow.
+### This section is now irrelevant. You can claim all legacy assets and all Fab assets with one click (do it before January 1st!) on Quixel.com and Fab.com. The old instructions follow.
 I'd wager most people who are here are most interested in mass-claiming all assets to their Quixel account. To do this, run [claim_all_assets.py](claim_all_assets.py) with either a [*basic*](basic_asset_metadata.tar.zst) or [*complete*](complete_asset_metadata.tar.zst) `asset_metadata.json` file present. There is no difference in functionality.
 
 ### Downloading Assets
