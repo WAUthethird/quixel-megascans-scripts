@@ -32,7 +32,7 @@ Similar to the Firefox instructions:
 
 ## Instructions
 ### Metadata Creation
-Each script (except [get_all_basic_asset_metadata.py](get_all_basic_asset_metadata.py)) requires a file called `asset_metadata.json` to be present alongside them.
+Most scripts require a file called `asset_metadata.json` to be present alongside them, or present in a directory they target.
 
 This file is initially created using [get_all_basic_asset_metadata.py](get_all_basic_asset_metadata.py) with the basic, barebones metadata (name and asset ID) for each asset from Quixel.
 
