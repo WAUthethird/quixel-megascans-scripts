@@ -1,8 +1,8 @@
 # Quixel Megascans Scripts
-A collection of Python scripts to facilitate claiming and downloading the *entire* [Quixel Megascans](https://quixel.com/) collection before it becomes [fully paid in 2025](https://www.unrealengine.com/en-US/blog/fab-content-marketplace-launches-in-october-publishing-portal-opens-today).
+A collection of Python scripts to facilitate claiming and downloading the *entire* [Quixel Megascans](https://quixel.com/) collection.
 
-# Update: December 1st, 2024
-[Fab](https://www.fab.com), Epic's single replacement for a number of their asset marketplaces and libraries (including Quixel) is available. All Quixel assets may be claimed in a single click [here](https://www.fab.com/megascans-free). Make sure to do it before the end of the year! You can also claim all legacy Quixel assets on Quixel.com before the end of the year, which I also recommend doing as I do not have a download script for Fab available at this time. This is because Fab has an absolutely atrocious method of downloading Quixel assets compared to Quixel.com, and I simply do not want to deal with it until an official API has been released, at the very least.
+# Update: January 1st, 2025
+The time has come, and you can no longer claim new assets from Quixel, or claim all Quixel assets from Fab. I will at some point make a script to download Fab assets, but that is a ways off as they do not _yet_ have an official API. You can still use the scripts here to download assets from Quixel you've already claimed/bought, but if you don't have any claimed, you are unfortunately out of luck now.
 
 ## Requirements
 - **Python 3.12 or higher** (3.11 and prior do not work!)
@@ -44,7 +44,7 @@ For convenience, I've compressed the [*basic*](basic_asset_metadata.tar.zst) and
 If you're on Windows, something like [7-Zip-zstd](https://github.com/mcmilk/7-Zip-zstd) should be able to decompress these.
 
 ### Claiming Assets
-### This section is now irrelevant. You can claim all legacy assets and all Fab assets with one click (do it before January 1st!) on Quixel.com and Fab.com. The old instructions follow.
+### This section is now irrelevant. As of January 1st, 2025, you can no longer claim assets on Quixel at all. The old instructions follow.
 I'd wager most people who are here are most interested in mass-claiming all assets to their Quixel account. To do this, run [claim_all_assets.py](claim_all_assets.py) with either a [*basic*](basic_asset_metadata.tar.zst) or [*complete*](complete_asset_metadata.tar.zst) `asset_metadata.json` file present. There is no difference in functionality.
 
 ### Downloading Assets
