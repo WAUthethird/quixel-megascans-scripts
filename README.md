@@ -2,7 +2,7 @@
 A collection of Python scripts to facilitate downloading the *entire* [Quixel Megascans](https://quixel.com/) collection.
 
 # Update: January 1st, 2025
-The time has come, and you can no longer claim new assets from Quixel, or claim all Quixel assets from Fab. I will at some point make a script to download Fab assets, but that is a ways off as they do not _yet_ have an official API. You can still use the scripts here to download assets from Quixel you've already claimed/bought, but if you don't have any claimed, you are unfortunately out of luck now.
+The time has come, and you can no longer claim assets from Quixel, or claim all Quixel assets from Fab. I will at some point make a script to download Fab assets, but that is a ways off as they do not _yet_ have an official API. You can still use the scripts here to download assets from Quixel you've already claimed/bought, but if you don't have any claimed, you are unfortunately out of luck now.
 
 ## Requirements
 - **Python 3.12 or higher** (3.11 and prior do not work!)
