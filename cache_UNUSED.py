@@ -2,7 +2,7 @@ import requests
 import json
 from urllib.parse import urlencode
 
-# Illustrates how to call the user-facing API -- this isn't necessary since I just use the developer API which works for regular user tokens.
+# Illustrates how to call the user-facing API -- this isn't necessary since I just use the developer API (https://quixel.github.io/megascans-api-docs/quick-start-guide/) which works for regular user tokens.
 
 def call_cache_api():
     params = {
